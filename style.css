@@ -1,7 +1,13 @@
-/* Base styles */
+@font-face {
+  font-family: "UthmanicQaloun";
+  src: url("uthmanic_qaloun_v21.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
-  font-family: "Arial", sans-serif;
-  direction: rtl;
+  font-family: "UthmanicQaloun", Arial, sans-serif;
+  direction: rtl; /* right-to-left for Arabic */
   text-align: right;
   padding: 20px;
   background: #f5f5f5;
@@ -189,7 +195,7 @@ input[type="text"]:focus {
   }
 
   #results p {
-    font-size: 16px;
+    font-size: 25px;
     line-height: 1.6;
     padding: 8px 0;
   }
@@ -271,6 +277,7 @@ input[type="text"]:focus {
 
   #results {
     background: #fff;
+    font-size: 25px;
     border-radius: 12px;
     padding: 12px;
     margin-top: 15px;
@@ -278,7 +285,7 @@ input[type="text"]:focus {
   }
 
   #results p {
-    font-size: 16px;
+    font-size: 25px;
     line-height: 1.6;
     padding: 8px 0;
   }

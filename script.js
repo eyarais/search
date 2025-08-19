@@ -1,8 +1,11 @@
-// 🟢 تنظيف النص العربي
+
 function cleanText(text) {
  return text
-        // Remove Arabic diacritics and Tatweel
+  .replace(/\u0640\u0654/g, 'ئ')
         .replace(/[\u0610-\u061A\u064B-\u065F\u06D6-\u06ED\u06DD-\u06DE\u06E9-\u06ECﰀ-ﰆ]/g, '')
+        // Normalize "ءا" at the beginning of a word to "أ"
+.replace(/(^|[\s.,!?؛،])ءا/g, '$1أ')
+
         // Normalize different forms of alif to 'ا'
         .replace(/[آأإ]/g, 'ا')
         // Normalize hamza on waw and ya
@@ -10,31 +13,12 @@ function cleanText(text) {
         .replace(/ئ/g, 'ي')
         // Normalize final ya and alif maqsoora
         .replace(/[ىے]/g, 'ي')
-        // Normalize common composite patterns
         // Remove repeated spaces
         .replace(/\s+/g, ' ')
-        .replace(/ة/g, 'ه') // توحيد التاء المربوطة
+      /*  .replace(/ة/g, 'ه') // توحيد التاء المربوطة
         .replace(/ؤ/g, 'و') // همزة على واو
         .replace(/ئ/g, 'ي') // همزة على ياء
-       
-        .replace(/\u0670/g, 'ا') // ألف خنجرية
-
-        .normalize("NFKD")
-        .replace(/\s+/g, ' ')
-        .trim()
-        .toLowerCase();
-}
-/*// 🟢 تنظيف النص العربي
-function cleanText(text) {
-    return text
-        .replace(/[\u0610-\u061A\u064B-\u065F\u06D6-\u06ED]/g, '') // تشكيل
-         .replace(/أ/g, 'ءا')
-        .replace(/[إأٱآا]/g, 'ا') // توحيد الألف
-        .replace(/[ىيے]/g, 'ي') // توحيد الياء
-        .replace(/ة/g, 'ه') // توحيد التاء المربوطة
-        .replace(/ؤ/g, 'و') // همزة على واو
-        .replace(/ئ/g, 'ي') // همزة على ياء
-       
+       */
         .replace(/\u0670/g, 'ا') // ألف خنجرية
 
         .normalize("NFKD")
@@ -43,8 +27,7 @@ function cleanText(text) {
         .toLowerCase();
 }
 
-} */
-// 🟢 تجهيز القرآن: تنظيف مسبق + بناء فهرس الكلمات
+// clean text
 const preprocessedQuran = quranData.map(aya => ({
     ...aya,
     cleanedText: cleanText(aya.aya_text)
@@ -141,7 +124,7 @@ function searchIndex(query, index) {
 }
 
 
-// 🟢 تمييز النتائج
+// red lighhhhhtttttttttt
 function highlightMatchPartial(ayaText, query) {
     const queryWords = cleanText(query).split(' ').filter(Boolean);
     if (!queryWords.length) return ayaText;
@@ -182,7 +165,7 @@ function showResults(results, query, batchSize = 20) {
         return;
     }
 
-    // نبدأ بعرض من 0
+
     window.currentResults = results;
     window.currentQuery = query;
     window.displayedCount = 0;
@@ -254,7 +237,7 @@ function handleSearch() {
 
         let results = searchIndex(query, quranIndex);
 
-        // 🟢 نأخذ القيم المحددة من الـ multi-select
+        // نأخذ القيم المحددة من الـ multi-select
         const suraSelect = document.getElementById('suraRange');
         const selectedOptions = Array.from(suraSelect.selectedOptions).map(opt => opt.value);
 
