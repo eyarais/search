@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <title>الباحث القرآني </title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRRQNPPFS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-ZRRQNPPFS1');
+    </script>
+</head>
+
+
+<body>
+
+    <a href="https://wa.me/+21653306043" target="_blank" id="contactDev">
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+        <span> اقتراح تحسينات </span>
+    </a>
+    <h2> الباحث القرآني قالون </h2>
+    <input type="text" id="searchInput" placeholder="اكتب كلمات البحث هنا...">
+    <div style="margin-top:10px;">
+        <div id="suraHeader" style="cursor:pointer; display:flex; align-items:center;">
+            <span>اختيار السور</span>
+            <span id="toggleArrow" style="margin-left:5px;">▼</span>
+        </div>
+
+        <div id="suraSection" style="display:none;">
+            <p id="suraMessage" style="color:rgb(0, 45, 128); font-size:14px;">كل السور مختارة افتراضيًا</p>
+            <select id="suraRange" multiple>
+        <option value="1-4" selected>من سورة الفاتحة إلى سورة النساء</option>
+                <option value="5-9" selected>من سورةالمائدة إلى سورة التوبة</option>
+                <option value="10-16" selected>من سورة يونس إلى سورة النحل</option>
+                <option value="17-25" selected>من سورة الإسراء إلى سورة الفرقان</option>
+                <option value="26-36" selected>من سورة الشعراء إلى سورة يس</option>
+                <option value="37-49" selected>من سورة الصافات إلى سورة الحجرات</option>
+                <option value="50-114" selected>من سورة ق إلى سورة الناس</option>
+            </select>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+    <script>
+        const choices = new Choices('#suraRange', {
+            removeItemButton: true,
+            shouldSort: false,
+        });
+
+        // Toggle arrow to show/hide the select list
+        const suraHeader = document.getElementById('suraHeader');
+        const suraSection = document.getElementById('suraSection');
+        const toggleArrow = document.getElementById('toggleArrow');
+
+        suraHeader.addEventListener('click', () => {
+            if (suraSection.style.display === 'none') {
+                suraSection.style.display = 'block';
+                toggleArrow.textContent = '▲'; // arrow points down when open
+            } else {
+                suraSection.style.display = 'none';
+                toggleArrow.textContent = '▼'; // arrow points up when closed
+            }
+        });
+
+        // Update message when user selects/deselects surahs
+        const suraMessage = document.getElementById('suraMessage');
+        choices.passedElement.element.addEventListener('change', () => {
+            const selected = choices.getValue(true).map(val => val).join(', ');
+            suraMessage.textContent = selected ? 'تم تحديد مجموعة السور(اضغط على المربع الكبير بش يعاودوا يخرجولك لي فسختهم)'/* + selected*/ : 'لم يتم تحديد أي سور';
+        });
+    </script>
+
+
+
+    <!-- هنا أضفنا عداد وزر نسخ -->
+    <div id="controls">
+        <span id="resultCount"></span>
+        <button id="copyBtn">نسخ جميع النتائج</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script src="quranData.js"></script>
+    <script src="script.js"></script>
+</body>
+
+
+</html>
