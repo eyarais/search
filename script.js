@@ -180,7 +180,7 @@ function showMore(batchSize = 20) {
     const html = nextBatch.map(aya => `
         <p>
             <span class="copy-icon" onclick="copySingleAya('${aya.sura_name_ar}', '${aya.aya_no}', \`${aya.aya_text}\`)">📋</span>
-            ${highlightMatchPartial(aya.aya_text, window.currentQuery)}
+            ${highlightMatchPartial('﴿'+aya.aya_text+'﴾', window.currentQuery)}
             <span class="surah">${aya.sura_name_ar} ${aya.aya_no}</span>
         </p>
     `).join('');
@@ -219,7 +219,6 @@ document.getElementById('searchInput').addEventListener('input', function () {
 /// --- your other functions (cleanText, searchIndex, showResults, etc.) above ---
 
 */
-// 🟢 اجعل النتائج تتجدد عند تغيير نطاق السور
 const suraSelect = document.getElementById('suraRange');
 suraSelect.addEventListener('change', handleSearch);
 
@@ -237,13 +236,13 @@ function handleSearch() {
 
         let results = searchIndex(query, quranIndex);
 
-        // نأخذ القيم المحددة من الـ multi-select
+    
         const suraSelect = document.getElementById('suraRange');
         const selectedOptions = Array.from(suraSelect.selectedOptions).map(opt => opt.value);
 
         if (selectedOptions.length > 0) {
             results = results.filter(aya => {
-                // لكل خيار محدد تحقق إذا aya.sura_no داخل النطاق
+              
                 return selectedOptions.some(range => {
                     const [start, end] = range.split('-').map(Number);
                     return aya.sura_no >= start && aya.sura_no <= end;
@@ -286,7 +285,7 @@ document.getElementById('copyBtn').addEventListener('click', () => {
     }
     let textToCopy = window.currentQuery + "\n";
     window.currentResults.forEach(aya => {
-        textToCopy += ` (${aya.aya_text} [${aya.sura_name_ar} ${aya.aya_no}])\n`;
+        textToCopy += `(${ayaText}) [${aya.sura_name_ar} ${aya.aya_no}]\n`;
     });
     const temp = document.createElement('textarea');
     temp.value = textToCopy.trim();
@@ -299,7 +298,8 @@ document.getElementById('copyBtn').addEventListener('click', () => {
 
 // 🟢 نسخ آية واحدة
 function copySingleAya(surah, ayaNo, ayaText) {
-    const textToCopy = ` (${ayaText} [${surah} ${ayaNo}])`;
+  const textToCopy = `(${ayaText}) [${surah} ${ayaNo}]`;
+
     const temp = document.createElement('textarea');
     temp.value = textToCopy;
     document.body.appendChild(temp);
@@ -307,4 +307,4 @@ function copySingleAya(surah, ayaNo, ayaText) {
     document.execCommand('copy');
     document.body.removeChild(temp);
     alert(`تم نسخ: ${surah} ${ayaNo}`);
-}
+} 
