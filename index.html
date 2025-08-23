@@ -6,7 +6,15 @@
     <title>الباحث القرآني </title>
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRRQNPPFS1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
+        gtag('config', 'G-ZRRQNPPFS1');
+    </script>
 </head>
 
 
@@ -28,7 +36,8 @@
         <div id="suraSection" style="display:none;">
             <p id="suraMessage" style="color:rgb(0, 45, 128); font-size:14px;">كل السور مختارة افتراضيًا</p>
             <select id="suraRange" multiple>
-                <option value="1-9" selected>من سورة الفاتحة إلى سورة التوبة</option>
+        <option value="1-4" selected>من سورة الفاتحة إلى سورة النساء</option>
+                <option value="5-9" selected>من سورةالمائدة إلى سورة التوبة</option>
                 <option value="10-16" selected>من سورة يونس إلى سورة النحل</option>
                 <option value="17-25" selected>من سورة الإسراء إلى سورة الفرقان</option>
                 <option value="26-36" selected>من سورة الشعراء إلى سورة يس</option>
@@ -83,5 +92,6 @@
     <script src="quranData.js"></script>
     <script src="script.js"></script>
 </body>
+
 
 </html>
