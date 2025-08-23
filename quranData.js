@@ -1,4 +1,4 @@
-const quranData = [[
+const quranData = [
   {
     "id": 1,
     "jozz": 1,
