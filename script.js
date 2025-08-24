@@ -124,35 +124,53 @@ function searchIndex(query, index) {
 }
 
 
-// red lighhhhhtttttttttt
+// red lighhhhhtttttttttt/* فما مشكل هنا تو نحلوه قريبا TODO 
 function highlightMatchPartial(ayaText, query) {
-    const queryWords = cleanText(query).split(' ').filter(Boolean);
+    const queryWords = cleanText(query).split(/\s+/).filter(Boolean);
     if (!queryWords.length) return ayaText;
 
     const originalWords = ayaText.split(/\s+/);
     const cleanWords = originalWords.map(cleanText);
 
     let result = '';
-    let qIndex = 0;
 
     for (let i = 0; i < originalWords.length; i++) {
-        if (qIndex < queryWords.length && cleanWords[i].startsWith(queryWords[qIndex])) {
-            const matchLength = queryWords[qIndex].length;
-            const originalWord = originalWords[i];
-            let highlighted = '';
-            let charCount = 0;
-            for (const char of originalWord) {
-                if (cleanText(char).length + charCount <= matchLength) {
-                    highlighted += char;
-                    charCount += cleanText(char).length;
-                } else break;
+        let word = originalWords[i];
+        let cleanWord = cleanWords[i];
+        let highlightedWord = word;
+
+        for (const q of queryWords) {
+            const index = cleanWord.indexOf(q);
+            if (index !== -1) {
+                // Map index from cleanWord → originalWord by counting letters
+                let start = 0, end = 0, cIndex = 0;
+                for (let j = 0; j < word.length; j++) {
+                    const c = cleanText(word[j]);
+                    if (!c) continue; // diacritics/tatweel removed
+                    if (cIndex === index) start = j;
+                    if (cIndex === index + q.length - 1) {
+                        end = j + 1;
+                        break;
+                    }
+                    cIndex += c.length;
+                }
+                highlightedWord =
+                    word.slice(0, start) +
+                    `<span class="match">` +
+                    word.slice(start, end) +
+                    `</span>` +
+                    word.slice(end);
+                break; // only highlight first query match per word
             }
-            result += `<span class="match">${highlighted}</span>${originalWord.slice(highlighted.length)} `;
-            qIndex++;
-        } else result += originalWords[i] + ' ';
+        }
+
+        result += highlightedWord + ' ';
     }
+
     return result.trim();
 }
+
+
 
 function showResults(results, query, batchSize = 20) {
     const resultsDiv = document.getElementById('results');
