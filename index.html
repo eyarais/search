@@ -6,7 +6,7 @@
     <title>الباحث القرآني </title>
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZRRQNPPFS1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -27,16 +27,22 @@
     </a>
     <h2> الباحث القرآني قالون </h2>
     <input type="text" id="searchInput" placeholder="اكتب كلمات البحث هنا...">
+    <!-- Hint text -->
+    <small id="searchHint" style="display:none; color:gray; font-size:12px;">
+        🟢 الألف الخنجرية تكتب ألف عادية "ا"
+    </small>
+
+
     <div style="margin-top:10px;">
         <div id="suraHeader" style="cursor:pointer; display:flex; align-items:center;">
-            <span>اختيار السور</span>
+            <span>اختيار التحزيب</span>
             <span id="toggleArrow" style="margin-left:5px;">▼</span>
         </div>
 
         <div id="suraSection" style="display:none;">
             <p id="suraMessage" style="color:rgb(0, 45, 128); font-size:14px;">كل السور مختارة افتراضيًا</p>
             <select id="suraRange" multiple>
-        <option value="1-4" selected>من سورة الفاتحة إلى سورة النساء</option>
+                <option value="1-4" selected>من سورة الفاتحة إلى سورة النساء</option>
                 <option value="5-9" selected>من سورةالمائدة إلى سورة التوبة</option>
                 <option value="10-16" selected>من سورة يونس إلى سورة النحل</option>
                 <option value="17-25" selected>من سورة الإسراء إلى سورة الفرقان</option>
@@ -75,13 +81,29 @@
         const suraMessage = document.getElementById('suraMessage');
         choices.passedElement.element.addEventListener('change', () => {
             const selected = choices.getValue(true).map(val => val).join(', ');
-            suraMessage.textContent = selected ? 'تم تحديد مجموعة السور(اضغط على المربع الكبير بش يعاودوا يخرجولك لي فسختهم)'/* + selected*/ : 'لم يتم تحديد أي سور';
+            suraMessage.textContent = selected ? 'تم تحديدالتحزيبات'/* + selected*/ : 'لم يتم تحديد أي سور';
+        });
+
+
+
+        // متع السارش ميساج hiiint 
+        const searchInput = document.getElementById("searchInput");
+        const searchHint = document.getElementById("searchHint");
+
+        //input focused
+        searchInput.addEventListener("focus", () => {
+            searchHint.style.display = "block";
+        });
+
+        // Hide hint
+        searchInput.addEventListener("blur", () => {
+            searchHint.style.display = "none";
         });
     </script>
 
 
 
-    <!-- هنا أضفنا عداد وزر نسخ -->
+    <!-- زر نسخ -->
     <div id="controls">
         <span id="resultCount"></span>
         <button id="copyBtn">نسخ جميع النتائج</button>
