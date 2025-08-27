@@ -27,11 +27,11 @@
     </a>
     <h2> الباحث القرآني قالون </h2>
     <input type="text" id="searchInput" placeholder="اكتب كلمات البحث هنا...">
-    <!-- Hint text -->
+    <!-- Hint text 
     <small id="searchHint" style="display:none; color:gray; font-size:12px;">
         🟢 الألف الخنجرية تكتب ألف عادية "ا"
     </small>
-
+-->
 
     <div style="margin-top:10px;">
         <div id="suraHeader" style="cursor:pointer; display:flex; align-items:center;">
@@ -84,21 +84,21 @@
             suraMessage.textContent = selected ? 'تم تحديدالتحزيبات'/* + selected*/ : 'لم يتم تحديد أي سور';
         });
 
-
-
-        // متع السارش ميساج hiiint 
-        const searchInput = document.getElementById("searchInput");
-        const searchHint = document.getElementById("searchHint");
-
-        //input focused
-        searchInput.addEventListener("focus", () => {
-            searchHint.style.display = "block";
-        });
-
-        // Hide hint
-        searchInput.addEventListener("blur", () => {
-            searchHint.style.display = "none";
-        });
+        /*
+        
+                // متع السارش ميساج hiiint 
+                const searchInput = document.getElementById("searchInput");
+                const searchHint = document.getElementById("searchHint");
+        
+                //input focused
+                searchInput.addEventListener("focus", () => {
+                    searchHint.style.display = "block";
+                });
+        
+                // Hide hint
+                searchInput.addEventListener("blur", () => {
+                    searchHint.style.display = "none";
+                });*/
     </script>
 
 
