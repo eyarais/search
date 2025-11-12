@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <title>البحث عن تكرار الكلمات في القرآن</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: "Cairo", Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #222;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        select,
+        input,
+        button {
+            margin: 5px;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            max-width: 250px;
+            height: 150px;
+        }
+
+        button {
+            background-color: #2e86de;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #1b4f72;
+        }
+
+        .result {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .result strong {
+            color: #007bff;
+        }
+
+        #showMoreBtn {
+            display: none;
+            margin: 15px auto;
+            background-color: #27ae60;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            select {
+                width: 100%;
+            }
+
+            input {
+                width: 80px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>البحث عن تكرار الكلمات في القرآن</h2>
+
+    <div style="margin-bottom:15px;">
+        <label>اختر السور:</label><br>
+        <select id="surahSelect" multiple></select>
+    </div>
+
+    <div style="margin-bottom:10px;">
+        <label>أقل عدد كلمات:</label>
+        <input type="number" id="minWords" value="3" min="1" max="20">
+        <label>أقصى عدد كلمات:</label>
+        <input type="number" id="maxWords" value="10" min="2" max="20">
+    </div>
+
+    <button onclick="searchOccurrences()">بحث</button>
+
+    <h3>النتائج:</h3>
+    <div id="results"></div>
+
+    <button id="showMoreBtn" onclick="showMore()">المزيد</button>
+
+    <script src="quranData.js"></script>
+
+    <script>
+        let displayedCount = 0;
+        let finalResults = [];
+
+        function populateSurahSelect() {
+            const surahSelect = document.getElementById('surahSelect');
+            const surahSet = new Set();
+            quranData.forEach(aya => surahSet.add(aya.sura_name_ar.trim()));
+            const sortedSurahs = Array.from(surahSet);
+            sortedSurahs.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                surahSelect.appendChild(option);
+            });
+        }
+
+        function searchOccurrences() {
+            const selectedSurahs = Array.from(document.getElementById('surahSelect').selectedOptions).map(opt => opt.value);
+            const minWords = parseInt(document.getElementById('minWords').value);
+            const maxWords = parseInt(document.getElementById('maxWords').value);
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            document.getElementById('showMoreBtn').style.display = 'none';
+            displayedCount = 0;
+
+            const filteredData = selectedSurahs.length > 0
+                ? quranData.filter(aya => selectedSurahs.includes(aya.sura_name_ar.trim()))
+                : quranData;
+
+            const resultsMap = new Map();
+
+            filteredData.forEach(aya => {
+                const words = aya.aya_text.split(/\s+/);
+                for (let len = minWords; len <= maxWords; len++) {
+                    for (let i = 0; i <= words.length - len; i++) {
+                        const phrase = words.slice(i, i + len).join(' ').trim();
+                        if (!resultsMap.has(phrase)) resultsMap.set(phrase, []);
+                        resultsMap.get(phrase).push({
+                            surah: aya.sura_name_ar,
+                            aya_no: aya.aya_no,
+                            text: aya.aya_text
+                        });
+                    }
+                }
+            });
+
+            finalResults = [];
+            resultsMap.forEach((occurrences, phrase) => {
+                if (occurrences.length > 1) {
+                    finalResults.push({ phrase, count: occurrences.length, occurrences });
+                }
+            });
+
+            finalResults = finalResults.filter((res, idx, arr) => {
+                return !arr.some(other =>
+                    other.phrase !== res.phrase &&
+                    other.phrase.includes(res.phrase) &&
+                    other.count === res.count
+                );
+            });
+
+            if (finalResults.length === 0) {
+                resultsDiv.innerHTML = '<p>لا توجد نتائج.</p>';
+                return;
+            }
+
+            showMore();
+        }
+
+        function showMore() {
+            const resultsDiv = document.getElementById('results');
+            const nextBatch = finalResults.slice(displayedCount, displayedCount + 10);
+            nextBatch.forEach(res => {
+                const div = document.createElement('div');
+                div.className = 'result';
+                const header = document.createElement('p');
+                header.innerHTML = `<strong>العبارة:</strong> ${res.phrase} | <strong>عدد مرات التكرار:</strong> ${res.count}`;
+                div.appendChild(header);
+
+                res.occurrences.forEach(o => {
+                    const p = document.createElement('p');
+                    p.textContent = `السورة: ${o.surah} , الآية ${o.aya_no} → ${o.text}`;
+                    div.appendChild(p);
+                });
+
+                resultsDiv.appendChild(div);
+            });
+
+            displayedCount += nextBatch.length;
+
+            if (displayedCount < finalResults.length) {
+                document.getElementById('showMoreBtn').style.display = 'block';
+            } else {
+                document.getElementById('showMoreBtn').style.display = 'none';
+            }
+        }
+
+        populateSurahSelect();
+    </script>
+
+</body>
+
+</html>
