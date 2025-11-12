@@ -117,6 +117,9 @@
 
     <script src="quranData.js"></script>
 
+   
+    <script src="quranData.js"></script>
+
     <script>
         let displayedCount = 0;
         let finalResults = [];
@@ -150,7 +153,9 @@
             const resultsMap = new Map();
 
             filteredData.forEach(aya => {
-                const words = aya.aya_text.split(/\s+/);
+                // remove extra spaces, normalize text
+                const cleanedText = aya.aya_text.trim();
+                const words = cleanedText.split(/\s+/);
                 for (let len = minWords; len <= maxWords; len++) {
                     for (let i = 0; i <= words.length - len; i++) {
                         const phrase = words.slice(i, i + len).join(' ').trim();
@@ -158,12 +163,13 @@
                         resultsMap.get(phrase).push({
                             surah: aya.sura_name_ar,
                             aya_no: aya.aya_no,
-                            text: aya.aya_text
+                            text: cleanedText
                         });
                     }
                 }
             });
 
+            // Only repeated phrases
             finalResults = [];
             resultsMap.forEach((occurrences, phrase) => {
                 if (occurrences.length > 1) {
@@ -171,6 +177,7 @@
                 }
             });
 
+            // Remove smaller phrases included in larger repeated phrases
             finalResults = finalResults.filter((res, idx, arr) => {
                 return !arr.some(other =>
                     other.phrase !== res.phrase &&
@@ -218,6 +225,9 @@
         populateSurahSelect();
     </script>
 
+
+
 </body>
+
 
 </html>
