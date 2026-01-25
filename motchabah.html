@@ -160,25 +160,41 @@ if (selectedSurahs.length > 0) {
     filteredData = quranData;
 }
 
+const resultsMap = new Map();
+const seenPhrases = new Map();
 
-            const resultsMap = new Map();
+filteredData.forEach(aya => {
+    const cleanedText = aya.aya_text.trim();
+    const words = cleanedText.split(/\s+/);
 
-            filteredData.forEach(aya => {
-                // remove extra spaces, normalize text
-                const cleanedText = aya.aya_text.trim();
-                const words = cleanedText.split(/\s+/);
-                for (let len = minWords; len <= maxWords; len++) {
-                    for (let i = 0; i <= words.length - len; i++) {
-                        const phrase = words.slice(i, i + len).join(' ').trim();
-                        if (!resultsMap.has(phrase)) resultsMap.set(phrase, []);
-                        resultsMap.get(phrase).push({
-                            surah: aya.sura_name_ar,
-                            aya_no: aya.aya_no,
-                            text: cleanedText
-                        });
-                    }
+    for (let len = minWords; len <= maxWords; len++) {
+        for (let i = 0; i <= words.length - len; i++) {
+            const phrase = words.slice(i, i + len).join(' ').trim();
+
+            // first time seen
+            if (!seenPhrases.has(phrase)) {
+                seenPhrases.set(phrase, [{
+                    surah: aya.sura_name_ar,
+                    aya_no: aya.aya_no,
+                    text: cleanedText
+                }]);
+            } 
+            // seen before → now repetition starts
+            else {
+                if (!resultsMap.has(phrase)) {
+                    resultsMap.set(phrase, [...seenPhrases.get(phrase)]);
                 }
-            });
+
+                resultsMap.get(phrase).push({
+                    surah: aya.sura_name_ar,
+                    aya_no: aya.aya_no,
+                    text: cleanedText
+                });
+            }
+        }
+    }
+});
+
 
             // Only repeated phrases
             finalResults = [];
@@ -242,4 +258,5 @@ if (selectedSurahs.length > 0) {
 
 
 </html>
+
 
