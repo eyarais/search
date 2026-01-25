@@ -146,9 +146,20 @@
             document.getElementById('showMoreBtn').style.display = 'none';
             displayedCount = 0;
 
-            const filteredData = selectedSurahs.length > 0
-                ? quranData.filter(aya => selectedSurahs.includes(aya.sura_name_ar.trim()))
-                : quranData;
+           let filteredData = [];
+
+if (selectedSurahs.length > 0) {
+    selectedSurahs.forEach(surahName => {
+        quranData.forEach(aya => {
+            if (aya.sura_name_ar.trim() === surahName) {
+                filteredData.push(aya);
+            }
+        });
+    });
+} else {
+    filteredData = quranData;
+}
+
 
             const resultsMap = new Map();
 
@@ -231,3 +242,4 @@
 
 
 </html>
+
