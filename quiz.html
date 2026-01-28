@@ -230,7 +230,7 @@
         ];
 
 
-        let finalResults = [];
+     /*   let finalResults = [];
         let quizIndex = 0;
         function populateSurahSelect() {
             const surahSelect = document.getElementById('surahSelect');
@@ -253,6 +253,30 @@
             });
         }
 
+*/ function toggleDropdown() {
+    const box = document.getElementById("dropdownBody");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+/* prevent closing when clicking inside */
+document.getElementById("dropdownBody").addEventListener("click", function (e) {
+    e.stopPropagation();
+});
+
+/* close only when clicking outside */
+document.addEventListener("click", function (e) {
+    const dropdown = document.querySelector(".dropdown");
+    if (!dropdown.contains(e.target)) {
+        document.getElementById("dropdownBody").style.display = "none";
+    }
+});
+
+/* update selected count */
+document.getElementById("surahSelect").addEventListener("change", () => {
+    const count =
+        document.getElementById("surahSelect").selectedOptions.length;
+    document.getElementById("selectedCount").innerText = `(${count})`;
+});
 
         function searchOccurrences() {
 
