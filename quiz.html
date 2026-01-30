@@ -344,12 +344,10 @@ function toggleSurahList() {
             resultsMap.forEach((occ, phrase) => {
                 if (occ.length > 1) {
                     // البحث عن أكبر نص مشترك بين كل occurrences
-                 finalResults.push({
-    phrase: phrase, // العبارة الأصلية فقط
-    count: occ.length,
-    occurrences: occ
-});
+                    let commonText = occ[0].text;
 
+                    for (let i = 1; i < occ.length; i++) {
+                        commonText = longestCommonSubstring(commonText, occ[i].text);
                     }
 
                     // trim النص النهائي
@@ -371,37 +369,24 @@ function toggleSurahList() {
 
 
             // ===== دالة لإيجاد أكبر نص مشترك بين سلسلتين =====
-    function longestCommonWordSequence(text1, text2) {
-    const w1 = text1.trim().split(/\s+/);
-    const w2 = text2.trim().split(/\s+/);
+            function longestCommonSubstring(s1, s2) {
+                let maxLen = 0;
+                let endIndex = 0;
 
-    let longest = [];
-
-    for (let i = 0; i < w1.length; i++) {
-        for (let j = 0; j < w2.length; j++) {
-
-            let temp = [];
-            let x = i;
-            let y = j;
-
-            while (
-                x < w1.length &&
-                y < w2.length &&
-                w1[x] === w2[y]
-            ) {
-                temp.push(w1[x]);
-                x++;
-                y++;
+                for (let i = 0; i < s1.length; i++) {
+                    for (let j = 0; j < s2.length; j++) {
+                        let k = 0;
+                        while (i + k < s1.length && j + k < s2.length && s1[i + k] === s2[j + k]) {
+                            k++;
+                        }
+                        if (k > maxLen) {
+                            maxLen = k;
+                            endIndex = i + k;
+                        }
+                    }
+                }
+                return s1.substring(endIndex - maxLen, endIndex);
             }
-
-            if (temp.length > longest.length) {
-                longest = temp;
-            }
-        }
-    }
-
-    return longest.join(" ");
-}
 
 
             // خلط الأسئلة عشوائيًا
