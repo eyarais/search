@@ -344,10 +344,11 @@ function toggleSurahList() {
             resultsMap.forEach((occ, phrase) => {
                 if (occ.length > 1) {
                     // البحث عن أكبر نص مشترك بين كل occurrences
-                    let commonText = occ[0].text;
-
-                    for (let i = 1; i < occ.length; i++) {
-                      commonText = longestCommonWordSequence(commonText, occ[i].text);
+                 finalResults.push({
+    phrase: phrase, // العبارة الأصلية فقط
+    count: occ.length,
+    occurrences: occ
+});
 
                     }
 
