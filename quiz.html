@@ -332,23 +332,17 @@ function toggleSurahList() {
                             resultsMap.set(phrase, []);
                         }
 
-                        // بعد انتهاء استخراج العبارات (phrases)
-resultsMap.forEach((_, phrase) => {
-    quranData.forEach(aya => {
-        if (aya.aya_text.includes(phrase)) {
-            resultsMap.get(phrase).push({
-                surah: aya.sura_name_ar,
-                aya_no: aya.aya_no,
-                text: aya.aya_text
-            });
-        }
-    });
-});
+                        resultsMap.get(phrase).push({
+                            surah: aya.sura_name_ar,
+                            aya_no: aya.aya_no,
+                            text: aya.aya_text
+                        });
+
                     }
                 }
             }
 
-            
+            // بناء finalResults فقط للتكرارات (count > 1)
             finalResults = [];
             // بعد بناء resultsMap
             finalResults = [];
