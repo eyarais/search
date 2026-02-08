@@ -294,12 +294,20 @@
                 );
             });
 
-            // Apply focus surah filter
-            if (focusSurah) {
-                finalResults = finalResults.filter(res =>
-                    res.occurrences.some(o => o.surah === focusSurah)
-                );
-            }
+         // Make sure focus surah is included in the selected surahs
+if (focusSurah && !selectedSurahs.includes(focusSurah)) {
+    filteredData = filteredData.concat(
+        quranData.filter(a => a.sura_name_ar.trim() === focusSurah)
+    );
+}
+
+// Apply focus surah filtering: keep phrases that appear in focus surah at least once
+if (focusSurah) {
+    finalResults = finalResults.filter(res =>
+        res.occurrences.some(o => o.surah === focusSurah)
+    );
+}
+
 
             // Shuffle
             finalResults.sort(() => Math.random() - 0.5);
