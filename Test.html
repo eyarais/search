@@ -174,34 +174,6 @@ const defaultSurahs = [
   "الزَّلزَلة","البَينَة","القَدر","العَلَق","التِّين","الشَّرح"
 ];
 
-let finalResults = [];
-let quizIndex = 0;
-
-/* =======================
-   إظهار/إخفاء قائمة السور
-======================= */
-function toggleSurahList() {
-    const box = document.getElementById("surahBox");
-    box.style.display = box.style.display === "none" ? "block" : "none";
-}
-
-/* =======================
-   تعبئة قائمة السور
-======================= */
-function populateSurahSelect() {
-    const surahSelect = document.getElementById("surahSelect");
-    const surahSet = new Set();
-
-    quranData.forEach(a => surahSet.add(a.sura_name_ar.trim()));
-
-    [...surahSet].forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        if (defaultSurahs.includes(name)) opt.selected = true;
-        surahSelect.appendChild(opt);
-    });
-}
 
 /* ================== UI ================== */
 
