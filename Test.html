@@ -203,148 +203,283 @@ function populateSurahSelect() {
     });
 }
 
-/* =======================
-   بدء الكويز
-======================= */
+/* ================== UI ================== */
+
+function toggleSurahList() {
+    const box = document.getElementById("surahBox");
+    box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+
+/* ================== DATA ================== */
+
+let finalResults = [];
+let quizIndex = 0;
+
+
+/* ================== POPULATE SURAHS ================== */
+
+function populateSurahSelect() {
+
+    const surahSelect = document.getElementById("surahSelect");
+    const surahSet = new Set();
+
+    quranData.forEach(a =>
+        surahSet.add(a.sura_name_ar.trim())
+    );
+
+    Array.from(surahSet).forEach(name => {
+
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+
+        surahSelect.appendChild(opt);
+    });
+}
+
+
+/* ================== MAIN LOGIC (SAME AS FIRST CODE) ================== */
+
 function searchOccurrences() {
 
-    const selectedSurahs = [...document.getElementById("surahSelect").selectedOptions]
-        .map(o => o.value);
+    const selectedSurahs =
+        Array.from(document.getElementById("surahSelect").selectedOptions)
+            .map(o => o.value);
 
     const minWords = parseInt(document.getElementById("minWords").value);
     const maxWords = parseInt(document.getElementById("maxWords").value);
 
-    /* --- تصفية الآيات حسب السور --- */
-    let filteredData = selectedSurahs.length
-        ? quranData.filter(a => selectedSurahs.includes(a.sura_name_ar.trim()))
-        : quranData;
 
-    /* =======================
-       1️⃣ استخراج عبارات السؤال
-       (بداية / نهاية الآية فقط)
-    ======================= */
-    const questionPhrases = new Set();
+    /* ---------- Filter ---------- */
+
+    let filteredData = [];
+
+    if (selectedSurahs.length > 0) {
+
+        selectedSurahs.forEach(surah => {
+
+            quranData.forEach(a => {
+                if (a.sura_name_ar.trim() === surah) {
+                    filteredData.push(a);
+                }
+            });
+
+        });
+
+    } else {
+        filteredData = quranData;
+    }
+
+
+    /* ---------- Core Logic ---------- */
+
+    const resultsMap = new Map();
+    const seenPhrases = new Map();
+
 
     filteredData.forEach(aya => {
-        const words = aya.aya_text.trim().split(/\s+/);
+
+        const cleanedText = aya.aya_text.trim();
+        const words = cleanedText.split(/\s+/);
+
 
         for (let len = minWords; len <= maxWords; len++) {
+
             for (let i = 0; i <= words.length - len; i++) {
 
-                const isAtStart = i === 0;
-                const isAtEnd = i + len === words.length;
-                if (!isAtStart && !isAtEnd) continue;
+                const phrase = words.slice(i, i + len).join(" ").trim();
 
-                const phrase = words.slice(i, i + len).join(" ");
-                if (phrase.length > 1) questionPhrases.add(phrase);
-            }
-        }
-    });
+                const isAtStart = (i === 0);
+                const isAtEnd   = (i + len === words.length);
 
-    /* =======================
-       2️⃣ البحث عن الإجابات
-       (أي موضع في الآية)
-    ======================= */
-    const resultsMap = new Map();
 
-    questionPhrases.forEach(phrase => {
-        quranData.forEach(aya => {
-            if (aya.aya_text.includes(phrase)) {
-                if (!resultsMap.has(phrase)) {
-                    resultsMap.set(phrase, []);
+                /* First time */
+
+                if (!seenPhrases.has(phrase)) {
+
+                    seenPhrases.set(phrase, [{
+                        surah: aya.sura_name_ar,
+                        aya_no: aya.aya_no,
+                        text: cleanedText,
+                        atStart: isAtStart,
+                        atEnd: isAtEnd
+                    }]);
+
                 }
-                resultsMap.get(phrase).push({
-                    surah: aya.sura_name_ar,
-                    aya_no: aya.aya_no,
-                    text: aya.aya_text
-                });
+
+                /* Repeated */
+
+                else {
+
+                    if (!resultsMap.has(phrase)) {
+                        resultsMap.set(phrase, [...seenPhrases.get(phrase)]);
+                    }
+
+                    resultsMap.get(phrase).push({
+                        surah: aya.sura_name_ar,
+                        aya_no: aya.aya_no,
+                        text: cleanedText,
+                        atStart: isAtStart,
+                        atEnd: isAtEnd
+                    });
+
+                }
+
             }
-        });
+
+        }
+
     });
 
-    /* =======================
-       3️⃣ بناء الكويز
-    ======================= */
+
+    /* ---------- Build finalResults ---------- */
+
     finalResults = [];
 
+
     resultsMap.forEach((occ, phrase) => {
+
         if (occ.length > 1) {
-            finalResults.push({
-                phrase,
-                count: occ.length,
-                occurrences: occ
-            });
+
+            const hasStartOrEnd =
+                occ.some(o => o.atStart || o.atEnd);
+
+
+            if (hasStartOrEnd) {
+
+                finalResults.push({
+                    phrase,
+                    count: occ.length,
+                    occurrences: occ
+                });
+
+            }
         }
+
     });
 
+
+    /* ---------- Remove Smaller Phrases ---------- */
+
+    finalResults = finalResults.filter((res, i, arr) => {
+
+        return !arr.some(other =>
+            other.phrase !== res.phrase &&
+            other.phrase.includes(res.phrase) &&
+            other.count === res.count
+        );
+
+    });
+
+
+    /* ---------- Shuffle ---------- */
+
+    finalResults.sort(() => Math.random() - 0.5);
+
+    quizIndex = 0;
+
+
     if (finalResults.length === 0) {
-        alert("🌸 لا توجد متشابهات بهذه الإعدادات");
+        alert("لا توجد نتائج");
         return;
     }
 
-    finalResults.sort(() => Math.random() - 0.5);
-    quizIndex = 0;
+
     document.getElementById("quizBox").style.display = "block";
+
     showQuestion();
 }
 
-/* =======================
-   عرض السؤال
-======================= */
+
+
+/* ================== QUIZ ================== */
+
 function showQuestion() {
+
     const q = finalResults[quizIndex];
+
     document.getElementById("phrase").innerHTML =
         `<strong>العبارة:</strong> ${q.phrase}`;
+
     document.getElementById("count").innerHTML =
         `<strong>عدد مرات التكرار:</strong> ${q.count}`;
+
     document.getElementById("answer").style.display = "none";
     document.getElementById("answer").innerHTML = "";
 }
 
-/* =======================
-   إظهار الجواب
-======================= */
+
+
+/* ================== ANSWER ================== */
+
 function showAnswer() {
+
     const q = finalResults[quizIndex];
+
     const div = document.getElementById("answer");
+
     div.innerHTML = "";
 
     q.occurrences.forEach(o => {
+
         const p = document.createElement("p");
-        p.textContent = `📖 ${o.surah} — الآية ${o.aya_no} → ${o.text}`;
+
+        p.textContent =
+            `📖 ${o.surah} — الآية ${o.aya_no} → ${o.text}`;
+
         div.appendChild(p);
+
     });
 
     div.style.display = "block";
 }
 
-/* =======================
-   أسماء السور فقط
-======================= */
+
+
+/* ================== SURAH NAMES ================== */
+
 function showSurahNames() {
+
     const q = finalResults[quizIndex];
+
     const div = document.getElementById("answer");
-    const surahs = [...new Set(q.occurrences.map(o => o.surah))];
-    div.innerHTML = `<strong>السور:</strong> ${surahs.join(" — ")}`;
+
+    const set = new Set();
+
+    q.occurrences.forEach(o => set.add(o.surah));
+
+    div.innerHTML =
+        `<strong>السور:</strong> ${Array.from(set).join(" — ")}`;
+
     div.style.display = "block";
 }
 
-/* =======================
-   السؤال التالي
-======================= */
+
+
+/* ================== NEXT ================== */
+
 function nextQuestion() {
+
     quizIndex++;
+
     if (quizIndex >= finalResults.length) {
+
         alert("🌸 انتهى الكويز");
+
         quizIndex = 0;
     }
+
     showQuestion();
 }
 
-/* =======================
-   تشغيل أولي
-======================= */
+
+/* ================== INIT ================== */
+
 populateSurahSelect();
+
+</script>
+
 </script>
 </body>
 
