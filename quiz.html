@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="ar">
 
-<head>
-    <meta charset="UTF-8">
-    <title>وأخر متشابهات</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -157,25 +152,30 @@
     </style>
 
 
-    <script src="quranData.js"></script>
+                                      <script src="quranData.js"></script>
 
-    <script>
+<script>
+/* =======================
+   الإعدادات الافتراضية
+======================= */
 const defaultSurahs = [
-  "يُونس", "هُود", "يُوسُف", "الرَّعد", "إبراهِيم", "الحِجر", "النَّحل",
-  "الشعراء", "النَّمل", "القَصَص", "العَنكبُوت", "الرُّوم", "لُقمَان",
-  "السَّجدة", "الأحزَاب", "قٓ", "الذَّاريَات", "الطُّور", "النَّجم", "القَمَر",
-  "الرَّحمٰن", "الوَاقِعة", "الحدِيد", "المُجَادلة", "الحَشر", "المُمتَحنَة",
-  "الصَّف", "الجُمعَة", "المُنَافِقُونَ", "التغَابُن", "الطَّلَاق", "التَّحرِيم",
-  "المُلك", "القَلَم", "الحَاقة", "المَعَارج", "نُوح", "الجِن", "المُزمل",
-  "المُدثر", "القِيَامة", "الإنسَان", "المُرسَلات", "النَّبَإ", "النَّازعَات",
-  "عَبَسَ", "التَّكوير", "الانفِطَار", "المُطَففين", "الانشِقَاق", "البُرُوج",
-  "الطَّارق", "الأعلى", "الغَاشِية", "الفَجر", "البَلَد", "الشَّمس",
-  "اللَّيل", "الضُّحى",
-  "النَّاس", "الفَلَق", "الإخلَاص", "المَسَد", "النَّصر", "الكافِرون",
-  "الكَوثر", "العَصر", "الهُمَزة", "الفِيل", "قُرَيش",
-  "المَاعُون", "التَّكاثُر", "القَارعَة", "العَاديَات", "الزَّلزَلة",
-  "البَينَة", "القَدر", "العَلَق", "التِّين", "الشَّرح"
+  "يُونس","هُود","يُوسُف","الرَّعد","إبراهِيم","الحِجر","النَّحل",
+  "الشعراء","النَّمل","القَصَص","العَنكبُوت","الرُّوم","لُقمَان",
+  "السَّجدة","الأحزَاب","قٓ","الذَّاريَات","الطُّور","النَّجم","القَمَر",
+  "الرَّحمٰن","الوَاقِعة","الحدِيد","المُجَادلة","الحَشر","المُمتَحنَة",
+  "الصَّف","الجُمعَة","المُنَافِقُونَ","التغَابُن","الطَّلَاق","التَّحرِيم",
+  "المُلك","القَلَم","الحَاقة","المَعَارج","نُوح","الجِن","المُزمل",
+  "المُدثر","القِيَامة","الإنسَان","المُرسَلات","النَّبَإ","النَّازعَات",
+  "عَبَسَ","التَّكوير","الانفِطَار","المُطَففين","الانشِقَاق","البُرُوج",
+  "الطَّارق","الأعلى","الغَاشِية","الفَجر","البَلَد","الشَّمس",
+  "اللَّيل","الضُّحى","النَّاس","الفَلَق","الإخلَاص","المَسَد",
+  "النَّصر","الكافِرون","الكَوثر","العَصر","الهُمَزة","الفِيل",
+  "قُرَيش","المَاعُون","التَّكاثُر","القَارعَة","العَاديَات",
+  "الزَّلزَلة","البَينَة","القَدر","العَلَق","التِّين","الشَّرح"
 ];
+
+
+/* ================== UI ================== */
 
 function toggleSurahList() {
     const box = document.getElementById("surahBox");
@@ -183,285 +183,282 @@ function toggleSurahList() {
 }
 
 
-       let finalResults = [];
-        let quizIndex = 0;
-        function populateSurahSelect() {
-            const surahSelect = document.getElementById('surahSelect');
-            const surahSet = new Set();
+/* ================== DATA ================== */
 
-            quranData.forEach(aya =>
-                surahSet.add(aya.sura_name_ar.trim())
-            );
+let finalResults = [];
+let quizIndex = 0;
 
-            Array.from(surahSet).forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
 
-                if (defaultSurahs.includes(name)) {
-                    option.selected = true;
-                }
+/* ================== POPULATE SURAHS ================== */
 
-                surahSelect.appendChild(option);
-            });
+function populateSurahSelect() {
+
+    const surahSelect = document.getElementById("surahSelect");
+    const surahSet = new Set();
+
+    quranData.forEach(a =>
+        surahSet.add(a.sura_name_ar.trim())
+    );
+
+    Array.from(surahSet).forEach(name => {
+
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+
+        // ⭐ Auto-select defaults
+        if (defaultSurahs.includes(name)) {
+            opt.selected = true;
         }
 
+        surahSelect.appendChild(opt);
+    });
+}
 
 
-        function searchOccurrences() {
 
-            const selectedSurahs =
-                Array.from(document.getElementById('surahSelect').selectedOptions)
-                    .map(o => o.value);
+/* ================== MAIN LOGIC (SAME AS FIRST CODE) ================== */
 
-            const minWords = parseInt(document.getElementById('minWords').value);
-            const maxWords = parseInt(document.getElementById('maxWords').value);
+function searchOccurrences() {
 
-            let filteredData = [];
+    const selectedSurahs =
+        Array.from(document.getElementById("surahSelect").selectedOptions)
+            .map(o => o.value);
 
-            if (selectedSurahs.length > 0) {
-                selectedSurahs.forEach(surahName => {
-                    quranData.forEach(aya => {
-                        if (aya.sura_name_ar.trim() === surahName) {
-                            filteredData.push(aya);
-                        }
+    const minWords = parseInt(document.getElementById("minWords").value);
+    const maxWords = parseInt(document.getElementById("maxWords").value);
+
+
+    /* ---------- Filter ---------- */
+
+    let filteredData = [];
+
+    if (selectedSurahs.length > 0) {
+
+        selectedSurahs.forEach(surah => {
+
+            quranData.forEach(a => {
+                if (a.sura_name_ar.trim() === surah) {
+                    filteredData.push(a);
+                }
+            });
+
+        });
+
+    } else {
+        filteredData = quranData;
+    }
+
+
+    /* ---------- Core Logic ---------- */
+
+    const resultsMap = new Map();
+    const seenPhrases = new Map();
+
+
+    filteredData.forEach(aya => {
+
+        const cleanedText = aya.aya_text.trim();
+        const words = cleanedText.split(/\s+/);
+
+
+        for (let len = minWords; len <= maxWords; len++) {
+
+            for (let i = 0; i <= words.length - len; i++) {
+
+                const phrase = words.slice(i, i + len).join(" ").trim();
+
+                const isAtStart = (i === 0);
+                const isAtEnd   = (i + len === words.length);
+
+
+                /* First time */
+
+                if (!seenPhrases.has(phrase)) {
+
+                    seenPhrases.set(phrase, [{
+                        surah: aya.sura_name_ar,
+                        aya_no: aya.aya_no,
+                        text: cleanedText,
+                        atStart: isAtStart,
+                        atEnd: isAtEnd
+                    }]);
+
+                }
+
+                /* Repeated */
+
+                else {
+
+                    if (!resultsMap.has(phrase)) {
+                        resultsMap.set(phrase, [...seenPhrases.get(phrase)]);
+                    }
+
+                    resultsMap.get(phrase).push({
+                        surah: aya.sura_name_ar,
+                        aya_no: aya.aya_no,
+                        text: cleanedText,
+                        atStart: isAtStart,
+                        atEnd: isAtEnd
                     });
-                });
-            } else {
-                filteredData = quranData;
-            }
-            /*
-                        const resultsMap = new Map();
-                        const seenPhrases = new Map();
-            
-                        filteredData.forEach(aya => {
-                            const words = aya.aya_text.trim().split(/\s+/);
-            
-                            for (let len = minWords; len <= maxWords; len++) {
-                                /*    for (let i = 0; i <= words.length - len; i++) {
-                                        // const phrase = words.slice(i, i + len).join(" ");
-                                        // نأخذ فقط بداية أو نهاية الآية
-                                        const isAtStart = i === 0;
-                                        const isAtEnd = i + len === words.length;
-                
-                
-                                        if (!isAtStart && !isAtEnd) continue;
-                
-                                        const phrase = words.slice(i, i + len).join(" ");
-                                        /*hnee youfa */
-            /*const isAtStart = i === 0;
-            const isAtEnd = i + len === words.length;
 
-            // شرط: خذ التكرار فقط في البداية أو النهاية
-            if (!isAtStart && !isAtEnd) continue;
-
-            const phrase = words.slice(i, i + len).join(" ");
-
-            // الآن: كل تكرار داخل نفس الآية يضاف كل مرة
-            if (!resultsMap.has(phrase)) {
-                resultsMap.set(phrase, []);
-            }
-
-            resultsMap.get(phrase).push({
-                surah: aya.sura_name_ar,
-                aya_no: aya.aya_no,
-                text: aya.aya_text
-            });
-
-            if (!seenPhrases.has(phrase)) {
-                seenPhrases.set(phrase, [{
-                    surah: aya.sura_name_ar,
-                    aya_no: aya.aya_no,
-                    text: aya.aya_text
-                }]);
-            } else {
-                if (!resultsMap.has(phrase)) {
-                    resultsMap.set(phrase, [...seenPhrases.get(phrase)]);
                 }
 
-                resultsMap.get(phrase).push({
-                    surah: aya.sura_name_ar,
-                    aya_no: aya.aya_no,
-                    text: aya.aya_text
-                });
             }
+
         }
-
-
 
     });
+
+
+    /* ---------- Build finalResults ---------- */
 
     finalResults = [];
 
+
     resultsMap.forEach((occ, phrase) => {
+
         if (occ.length > 1) {
-            finalResults.push({
-                phrase,
-                count: occ.length,
-                occurrences: occ
-            });
+
+            const hasStartOrEnd =
+                occ.some(o => o.atStart || o.atEnd);
+
+
+            if (hasStartOrEnd) {
+
+                finalResults.push({
+                    phrase,
+                    count: occ.length,
+                    occurrences: occ
+                });
+
+            }
         }
+
     });
-    // خلط الأسئلة عشوائيًا
+
+
+    /* ---------- Remove Smaller Phrases ---------- */
+
+    finalResults = finalResults.filter((res, i, arr) => {
+
+        return !arr.some(other =>
+            other.phrase !== res.phrase &&
+            other.phrase.includes(res.phrase) &&
+            other.count === res.count
+        );
+
+    });
+
+
+    /* ---------- Shuffle ---------- */
+
     finalResults.sort(() => Math.random() - 0.5);
 
     quizIndex = 0;
+
+
+    if (finalResults.length === 0) {
+        alert("لا توجد نتائج");
+        return;
+    }
+
+
     document.getElementById("quizBox").style.display = "block";
+
     showQuestion();
-}*/
-            const resultsMap = new Map();
-
-            for (let aya of filteredData) {
-                const words = aya.aya_text.trim().split(/\s+/);
-
-                for (let len = minWords; len <= maxWords; len++) {
-                    for (let i = 0; i <= words.length - len; i++) {
-                        const isAtStart = i === 0;
-                        const isAtEnd = i + len === words.length;
-
-                        // شرط: خذ التكرار فقط في بداية أو نهاية الآية
-                        if (!isAtStart && !isAtEnd) continue;
-
-                        const phrase = words.slice(i, i + len).join(" ");
-
-                        // تجاهل إذا العبارة عبارة عن حرف واحد فقط
-                        if (phrase.length === 1) continue;
-
-                        // كل تكرار يضاف
-                        if (!resultsMap.has(phrase)) {
-                            resultsMap.set(phrase, []);
-                        }
-
-                        resultsMap.get(phrase).push({
-                            surah: aya.sura_name_ar,
-                            aya_no: aya.aya_no,
-                            text: aya.aya_text
-                        });
-
-                    }
-                }
-            }
-
-            // بناء finalResults فقط للتكرارات (count > 1)
-            finalResults = [];
-            // بعد بناء resultsMap
-            finalResults = [];
-
-            resultsMap.forEach((occ, phrase) => {
-                if (occ.length > 1) {
-                    // البحث عن أكبر نص مشترك بين كل occurrences
-                    let commonText = occ[0].text;
-
-                    for (let i = 1; i < occ.length; i++) {
-                        commonText = longestCommonSubstring(commonText, occ[i].text);
-                    }
-
-                    // trim النص النهائي
-                    commonText = commonText.trim();
-
-                    finalResults.push({
-                        phrase: commonText, // استخدم أكبر نص مشترك
-                        count: occ.length,
-                        occurrences: occ
-                    });
-                }
-            });
-
-            // خلط الأسئلة
-            finalResults.sort(() => Math.random() - 0.5);
-            quizIndex = 0;
-            document.getElementById("quizBox").style.display = "block";
-            showQuestion();
+}
 
 
-            // ===== دالة لإيجاد أكبر نص مشترك بين سلسلتين =====
-            function longestCommonSubstring(s1, s2) {
-                let maxLen = 0;
-                let endIndex = 0;
 
-                for (let i = 0; i < s1.length; i++) {
-                    for (let j = 0; j < s2.length; j++) {
-                        let k = 0;
-                        while (i + k < s1.length && j + k < s2.length && s1[i + k] === s2[j + k]) {
-                            k++;
-                        }
-                        if (k > maxLen) {
-                            maxLen = k;
-                            endIndex = i + k;
-                        }
-                    }
-                }
-                return s1.substring(endIndex - maxLen, endIndex);
-            }
+/* ================== QUIZ ================== */
+
+function showQuestion() {
+
+    const q = finalResults[quizIndex];
+
+    document.getElementById("phrase").innerHTML =
+        `<strong>العبارة:</strong> ${q.phrase}`;
+
+    document.getElementById("count").innerHTML =
+        `<strong>عدد مرات التكرار:</strong> ${q.count}`;
+
+    document.getElementById("answer").style.display = "none";
+    document.getElementById("answer").innerHTML = "";
+}
 
 
-            // خلط الأسئلة عشوائيًا
-            finalResults.sort(() => Math.random() - 0.5);
 
-            quizIndex = 0;
-            document.getElementById("quizBox").style.display = "block";
-            showQuestion();
-        }
-        // ===== عرض السؤال =====
-        function showQuestion() {
-            const q = finalResults[quizIndex];
+/* ================== ANSWER ================== */
 
-            document.getElementById("phrase").innerHTML =
-                `<strong>العبارة:</strong> ${q.phrase}`;
+function showAnswer() {
 
-            document.getElementById("count").innerHTML =
-                `<strong>عدد مرات التكرار:</strong> ${q.count}`;
+    const q = finalResults[quizIndex];
 
-            document.getElementById("answer").style.display = "none";
-            document.getElementById("answer").innerHTML = "";
-        }
+    const div = document.getElementById("answer");
 
-        // ===== إظهار الجواب =====
-        function showAnswer() {
-            const q = finalResults[quizIndex];
-            const div = document.getElementById("answer");
+    div.innerHTML = "";
 
-            div.innerHTML = "";
+    q.occurrences.forEach(o => {
 
-            q.occurrences.forEach(o => {
-                const p = document.createElement("p");
-                p.textContent =
-                    `📖 ${o.surah} — الآية ${o.aya_no} → ${o.text}`;
-                div.appendChild(p);
-            });
+        const p = document.createElement("p");
 
-            div.style.display = "block";
-        }
-        function showSurahNames() {
-            const q = finalResults[quizIndex];
-            const div = document.getElementById("answer");
+        p.textContent =
+            `📖 ${o.surah} — الآية ${o.aya_no} → ${o.text}`;
 
-            // جمع أسماء السور بدون تكرار
-            const surahSet = new Set();
-            q.occurrences.forEach(o => surahSet.add(o.surah));
+        div.appendChild(p);
 
-            // تحويل الـ Set إلى مصفوفة وعرضها
-            const surahList = Array.from(surahSet).join(" — ");
+    });
 
-            div.innerHTML = `<strong>السور التي تحتوي على التكرار:</strong> ${surahList}`;
-            div.style.display = "block";
-        }
+    div.style.display = "block";
+}
 
-        // ===== التالي =====
-        function nextQuestion() {
-            quizIndex++;
 
-            if (quizIndex >= finalResults.length) {
-                alert("🌸 انتهى الكويز");
-                quizIndex = 0;
-            }
 
-            showQuestion();
-        }
+/* ================== SURAH NAMES ================== */
 
-        populateSurahSelect();
-    </script>
+function showSurahNames() {
 
+    const q = finalResults[quizIndex];
+
+    const div = document.getElementById("answer");
+
+    const set = new Set();
+
+    q.occurrences.forEach(o => set.add(o.surah));
+
+    div.innerHTML =
+        `<strong>السور:</strong> ${Array.from(set).join(" — ")}`;
+
+    div.style.display = "block";
+}
+
+
+
+/* ================== NEXT ================== */
+
+function nextQuestion() {
+
+    quizIndex++;
+
+    if (quizIndex >= finalResults.length) {
+
+        alert("🌸 انتهى الكويز");
+
+        quizIndex = 0;
+    }
+
+    showQuestion();
+}
+
+
+/* ================== INIT ================== */
+
+populateSurahSelect();
+
+</script>
+
+</script>
 </body>
 
 </html>
