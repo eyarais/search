@@ -206,9 +206,15 @@ function populateSurahSelect() {
         opt.value = name;
         opt.textContent = name;
 
+        // ⭐ Auto-select defaults
+        if (defaultSurahs.includes(name)) {
+            opt.selected = true;
+        }
+
         surahSelect.appendChild(opt);
     });
 }
+
 
 
 /* ================== MAIN LOGIC (SAME AS FIRST CODE) ================== */
