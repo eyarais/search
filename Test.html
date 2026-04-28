@@ -1,373 +1,249 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 
 <head>
-    <meta charset="UTF-8">
-    <title>وأخر متشابهات - Focus Surah Quiz</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta charset="UTF-8">
+
+    <title>تقسيم الجداااول</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         body {
-            font-family: "Cairo", Arial, sans-serif;
-            direction: rtl;
-            text-align: right;
+            font-family: Arial;
+            background: #f3f3f3;
             padding: 20px;
-            background-color: #f8f9fa;
-        }
-
-        h2 {
             text-align: center;
         }
 
-        .result {
+        .container {
             background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-            margin-top: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        select {
+            width: 100%;
+            height: 200px;
+            margin: 10px 0;
         }
 
         button {
-            padding: 8px 15px;
-            border-radius: 6px;
-            border: none;
-            background: #2e86de;
-            color: white;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1b4f72;
-        }
-
-        .surah-box {
-            background: white;
-            border-radius: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 8px;
-        }
-
-        #surahSelect {
-            width: 100%;
-            border: none;
-            outline: none;
-            font-size: 15px;
-            font-family: "Cairo", Arial;
-        }
-
-        #surahSelect option {
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 4px;
-        }
-
-        #surahSelect option:checked {
-            background-color: #2e86de;
-            color: white;
-        }
-
-        select, input {
-            margin-top: 5px;
-            margin-bottom: 10px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 15px;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 12px;
-            }
-
-            h2 {
-                font-size: 20px;
-                text-align: center;
-            }
-
-            button {
-                width: 100%;
-                margin-top: 10px;
-                font-size: 16px;
-            }
-
-            .surah-box {
-                max-height: 160px;
-            }
-        }
-
-        .quiz-btn {
             padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            background-color: #2e86de;
-            color: white;
-            font-size: 15px;
+            margin: 10px;
+            font-size: 16px;
             cursor: pointer;
-            transition: 0.3s;
         }
 
-        .quiz-btn:hover {
-            background-color: #1b4f72;
-        }
-
-        #answer p {
-            background: #f1f3f6;
-            padding: 8px 10px;
-            border-radius: 6px;
-            margin: 5px 0;
+        textarea {
+            width: 100%;
+            height: 250px;
+            margin-top: 20px;
+            font-size: 16px;
         }
     </style>
+
 </head>
 
 <body>
-    <h2>وأخر متشابهات - Focus Surah Quiz</h2>
+    <p>اختر عدد أيام التقسيم</p>
 
-    <!-- Multi-surah filter -->
-    <label>اختر السور للبحث:</label>
-    <button type="button" onclick="toggleSurahList()">اختر السور 📜</button>
-    <div id="surahBox" class="surah-box" style="display:none;">
-        <select id="surahSelect" multiple></select>
-    </div>
-
-    <br><br>
-
-    <!-- Focus surah filter -->
-    <label>اختر السورة الرئيسية (للحفظ):</label>
-    <select id="focusSurah">
-        <option value="">-- لا يوجد --</option>
+    <select id="daysCount">
+        <option value="6">6 أيام</option>
+        <option value="7">7 أيام</option>
+        <option value="10">10 أيام</option>
+        <option value="12">12 أيام</option>
     </select>
 
-    <br><br>
+    <div class="container">
 
-    <!-- Word limits -->
-    <label>أقل عدد كلمات:</label>
-    <input type="number" id="minWords" value="3">
+        <h2>جدول مراجعة 🌼</h2>
+        <p>اختر السور التي تريد تقسيمها</p>
 
-    <label>أقصى عدد كلمات:</label>
-    <input type="number" id="maxWords" value="10">
+        <select id="surahList" multiple></select>
 
-    <br><br>
+        <p>اختر سور التركيز (تقرأ كل يوم)</p>
 
-    <button onclick="searchOccurrences()">ابدأ الكويز</button>
+        <select id="focusList" multiple></select>
+        <label>
+            <input type="checkbox" id="splitIntoTwo">
+            اقسم على 2 للغيبي
+        </label>
+        <button onclick="generate()">إنشاء الجدول</button>
 
-    <div id="quizBox" class="result" style="display:none; text-align:center;">
-        <p id="phrase" style="font-size:18px; font-weight:bold; margin-bottom:10px;"></p>
-        <p id="count" style="color:#555; margin-bottom:20px;"></p>
-
-        <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
-            <button onclick="showAnswer()" class="quiz-btn">إظهار الجواب</button>
-            <button onclick="showSurahNames()" class="quiz-btn">عرض أسماء السور فقط 📜</button>
-        </div>
-
-        <div id="answer" style="display:none; margin-top:15px; text-align:right;"></div>
-
-        <button onclick="nextQuestion()" class="quiz-btn" style="margin-top:20px;">التالي ⏭️</button>
+        <textarea id="result" placeholder="سيظهر الجدول هنا ويمكنك نسخه"></textarea>
+        <button onclick="generate(true)">🎲 shuffle </button>
     </div>
 
-    <!-- Quran data -->
     <script src="quranData.js"></script>
 
     <script>
-        // ===== Defaults =====
-        const defaultSurahs = [
-            "البقرة", "آل عمران", "النساء", "المائدة", "يونس", "هود"
-        ];
+        //const surahs = [...new Set(quranData.map(a => a.sura_name_ar.trim()))]
+        const surahs = [...new Set(
+            quranData
+                .filter(a => a.sura_no >= 67 && a.sura_no <= 114)
+                .map(a => a.sura_name_ar.trim())
+        )]
+        const list = document.getElementById("surahList")
+        const focus = document.getElementById("focusList")
 
-        // ===== UI Functions =====
-        function toggleSurahList() {
-            const box = document.getElementById("surahBox");
-            box.style.display = box.style.display === "none" ? "block" : "none";
-        }
+        surahs.forEach(s => {
 
-        // ===== Variables =====
-        let finalResults = [];
-        let quizIndex = 0;
+            let o1 = document.createElement("option")
+            o1.value = s
+            o1.text = s
+            list.appendChild(o1)
 
-        // ===== Populate surahs =====
-        function populateSurahSelect() {
-            const surahSelect = document.getElementById("surahSelect");
-            const surahSet = new Set();
+            let o2 = document.createElement("option")
+            o2.value = s
+            o2.text = s
+            focus.appendChild(o2)
 
-            quranData.forEach(a => surahSet.add(a.sura_name_ar.trim()));
+        })
+        /*function getSurahWeights() {
 
-            Array.from(surahSet).forEach(name => {
-                const opt = document.createElement("option");
-                opt.value = name;
-                opt.textContent = name;
+            let map = {}
 
-                // Auto-select defaults
-                if (defaultSurahs.includes(name)) opt.selected = true;
+            quranData.forEach(a => {
 
-                surahSelect.appendChild(opt);
-            });
+                let name = a.sura_name_ar.trim()
+                let page = parseInt(a.page)
 
-            // Populate focus surah
-            const focusSelect = document.getElementById("focusSurah");
-            Array.from(surahSet).forEach(name => {
-                const opt = document.createElement("option");
-                opt.value = name;
-                opt.textContent = name;
-                focusSelect.appendChild(opt);
-            });
-        }
-
-        // ===== Search occurrences =====
-        function searchOccurrences() {
-            const selectedSurahs = Array.from(document.getElementById("surahSelect").selectedOptions).map(o => o.value);
-            const focusSurah = document.getElementById("focusSurah").value.trim();
-            const minWords = parseInt(document.getElementById("minWords").value);
-            const maxWords = parseInt(document.getElementById("maxWords").value);
-
-            // Filter data by selected surahs
-            let filteredData = [];
-            if (selectedSurahs.length > 0) {
-                selectedSurahs.forEach(surah => {
-                    quranData.forEach(a => {
-                        if (a.sura_name_ar.trim() === surah) filteredData.push(a);
-                    });
-                });
-            } else filteredData = quranData;
-
-            // Core logic: seenPhrases + resultsMap
-            const resultsMap = new Map();
-            const seenPhrases = new Map();
-
-            filteredData.forEach(aya => {
-                const cleanedText = aya.aya_text.trim();
-                const words = cleanedText.split(/\s+/);
-
-                for (let len = minWords; len <= maxWords; len++) {
-                    for (let i = 0; i <= words.length - len; i++) {
-                        const phrase = words.slice(i, i + len).join(" ").trim();
-                        const isAtStart = i === 0;
-                        const isAtEnd = i + len === words.length;
-
-                        if (!isAtStart && !isAtEnd) continue;
-                        if (phrase.length === 1) continue;
-
-                        if (!seenPhrases.has(phrase)) {
-                            seenPhrases.set(phrase, [{
-                                surah: aya.sura_name_ar,
-                                aya_no: aya.aya_no,
-                                text: cleanedText,
-                                atStart: isAtStart,
-                                atEnd: isAtEnd
-                            }]);
-                        } else {
-                            if (!resultsMap.has(phrase)) {
-                                resultsMap.set(phrase, [...seenPhrases.get(phrase)]);
-                            }
-                            resultsMap.get(phrase).push({
-                                surah: aya.sura_name_ar,
-                                aya_no: aya.aya_no,
-                                text: cleanedText,
-                                atStart: isAtStart,
-                                atEnd: isAtEnd
-                            });
-                        }
+                if (!map[name]) {
+                    map[name] = {
+                        min: page,
+                        max: page,
+                        ayahs: 0
                     }
                 }
-            });
 
-            // Build finalResults
-            finalResults = [];
-            resultsMap.forEach((occ, phrase) => {
-                if (occ.length > 1 && occ.some(o => o.atStart || o.atEnd)) {
-                    finalResults.push({
-                        phrase,
-                        count: occ.length,
-                        occurrences: occ
-                    });
+                map[name].min = Math.min(map[name].min, page)
+                map[name].max = Math.max(map[name].max, page)
+                map[name].ayahs++
+
+            })
+
+            let weights = {}
+
+            Object.keys(map).forEach(s => {
+
+                let pages = map[s].max - map[s].min + 1
+                let ayahs = map[s].ayahs
+
+                // ⭐ الوزن المركب
+                weights[s] = (pages * 10) + ayahs
+
+            })
+
+            return weights
+        }*/
+        function getSurahWeights() {
+
+            let linesMap = {}
+
+            quranData.forEach(a => {
+
+                let name = a.sura_name_ar.trim()
+
+                let start = parseInt(a.line_start)
+                let end = parseInt(a.line_end)
+
+                if (!linesMap[name]) {
+                    linesMap[name] = new Set()
                 }
-            });
 
-            // Remove smaller phrases inside larger ones
-            finalResults = finalResults.filter((res, i, arr) => {
-                return !arr.some(other =>
-                    other.phrase !== res.phrase &&
-                    other.phrase.includes(res.phrase) &&
-                    other.count === res.count
-                );
-            });
+                for (let i = start; i <= end; i++) {
+                    linesMap[name].add(i)
+                }
 
-         // Make sure focus surah is included in the selected surahs
-if (focusSurah && !selectedSurahs.includes(focusSurah)) {
-    filteredData = filteredData.concat(
-        quranData.filter(a => a.sura_name_ar.trim() === focusSurah)
-    );
-}
+            })
 
-// Apply focus surah filtering: keep phrases that appear in focus surah at least once
-if (focusSurah) {
-    finalResults = finalResults.filter(res =>
-        res.occurrences.some(o => o.surah === focusSurah)
-    );
-}
+            let weights = {}
 
+            Object.keys(linesMap).forEach(s => {
+                weights[s] = linesMap[s].size
+            })
 
-            // Shuffle
-            finalResults.sort(() => Math.random() - 0.5);
+            return weights
+        }
+        function shuffleArray(arr) {
 
-            quizIndex = 0;
-            if (finalResults.length === 0) {
-                alert("لا توجد نتائج");
-                return;
+            let array = [...arr]
+
+            for (let i = array.length - 1; i > 0; i--) {
+
+                let j = Math.floor(Math.random() * (i + 1))
+
+                    ;[array[i], array[j]] = [array[j], array[i]]
             }
 
-            document.getElementById("quizBox").style.display = "block";
-            showQuestion();
+            return array
         }
+        function distributeBalanced(selected, daysCount, isRandom = false) {
 
-        // ===== Quiz functions =====
-        function showQuestion() {
-            const q = finalResults[quizIndex];
-            document.getElementById("phrase").innerHTML = `<strong>العبارة:</strong> ${q.phrase}`;
-            document.getElementById("count").innerHTML = `<strong>عدد مرات التكرار:</strong> ${q.count}`;
-            document.getElementById("answer").style.display = "none";
-            document.getElementById("answer").innerHTML = "";
-        }
+            let weights = getSurahWeights()
 
-        function showAnswer() {
-            const q = finalResults[quizIndex];
-            const div = document.getElementById("answer");
-            const focusSurah = document.getElementById("focusSurah").value.trim();
-            div.innerHTML = "";
+            let days = Array.from({ length: daysCount }, () => [])
+            let totals = Array(daysCount).fill(0)
 
-            q.occurrences.forEach(o => {
-                const p = document.createElement("p");
-                if (o.surah === focusSurah) p.style.background = "#fffae6";
-                p.textContent = `📖 ${o.surah} — الآية ${o.aya_no} → ${o.text}`;
-                div.appendChild(p);
-            });
+            let sorted = selected.sort((a, b) => weights[b] - weights[a])
 
-            div.style.display = "block";
-        }
 
-        function showSurahNames() {
-            const q = finalResults[quizIndex];
-            const div = document.getElementById("answer");
-            const set = new Set();
-            q.occurrences.forEach(o => set.add(o.surah));
-            div.innerHTML = `<strong>السور:</strong> ${Array.from(set).join(" — ")}`;
-            div.style.display = "block";
-        }
-
-        function nextQuestion() {
-            quizIndex++;
-            if (quizIndex >= finalResults.length) {
-                alert("🌸 انتهى الكويز");
-                quizIndex = 0;
+            if (isRandom) {
+                sorted = shuffleArray(sorted)
             }
-            showQuestion();
-        }
 
-        // ===== Initialize =====
-        populateSurahSelect();
+            sorted.forEach(s => {
+
+                let minIndex = totals.indexOf(Math.min(...totals))
+
+                days[minIndex].push(s)
+                totals[minIndex] += weights[s]
+
+            })
+
+            return days
+        }
+        function generate(isRandom = false) {
+
+            let selected = [...list.selectedOptions].map(o => o.value)
+            let focusSurah = [...focus.selectedOptions].map(o => o.value)
+
+            let daysCount = parseInt(document.getElementById("daysCount").value)
+            let split = document.getElementById("splitIntoTwo").checked
+
+            let days = distributeBalanced(selected, daysCount, isRandom)
+
+            let text = "🌼 جدول المراجعة المتوازن 🌼\n\n"
+
+            days.forEach((d, i) => {
+
+                text += "🟢 اليوم " + (i + 1) + ":\n"
+
+                if (split) {
+                    let mid = Math.ceil(d.length / 2)
+                    let first = d.slice(0, mid)
+                    let second = d.slice(mid)
+
+                    let tasmi3 = [...new Set([...focusSurah, ...first])]
+
+                    text += "📖 تسميع: " + tasmi3.join(" – ") + "\n"
+                    text += "🌙 غيبي: " + second.join(" – ") + "\n"
+
+                } else {
+                    let full = [...new Set([...focusSurah, ...d])]
+                    text += full.join(" – ") + "\n"
+                }
+
+                text += "\n"
+            })
+
+            document.getElementById("result").value = text
+            navigator.clipboard.writeText(text)
+        }
     </script>
+
 </body>
 
 </html>
