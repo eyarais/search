@@ -42,25 +42,56 @@
             margin-top: 20px;
             font-size: 16px;
         }
+
+        .navbar {
+            background: linear-gradient(90deg, #3d5010, #02c021);
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            position: fixed;
+            top: 0;
+            left: 0;
+
+            z-index: 1000;
+        }
+
+        .logo {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
 
 </head>
 
 <body>
-    <p>اختر عدد أيام التقسيم</p>
+    <div class="navbar">
+        <div class="logo">أم عبيدة متع معاذ </div>
+    </div>
+    </div>
+    <br /> <br />
 
-    <select id="daysCount">
-        <option value="6">6 أيام</option>
-        <option value="7">7 أيام</option>
-        <option value="10">10 أيام</option>
-        <option value="12">12 أيام</option>
-    </select>
-
+    <div class="container">
+        <p>اختر عدد أيام التقسيم</p>
+        <select id="daysCount">
+            <option value="5">5 أيام</option>
+            <option value="6" selected>6 أيام</option>
+            <option value="7">7 أيام</option>
+            <option value="10">10 أيام</option>
+            <option value="12">12 أيام</option>
+        </select>
+    </div>
     <div class="container">
 
         <h2>جدول مراجعة 🌼</h2>
         <p>اختر السور التي تريد تقسيمها</p>
-
+        <label>
+            <input type="checkbox" id="showAll">
+            عرض جميع السور (1 - 114)
+        </label>
         <select id="surahList" multiple></select>
 
         <p>اختر سور التركيز (تقرأ كل يوم)</p>
@@ -72,7 +103,7 @@
         </label>
         <button onclick="generate()">إنشاء الجدول</button>
 
-        <textarea id="result" placeholder="سيظهر الجدول هنا ويمكنك نسخه"></textarea>
+        <textarea id="result" placeholder="سيظهر الجدول هنا وينسخ تلقائيا"></textarea>
         <button onclick="generate(true)">🎲 shuffle </button>
     </div>
 
@@ -80,11 +111,47 @@
 
     <script>
         //const surahs = [...new Set(quranData.map(a => a.sura_name_ar.trim()))]
-        const surahs = [...new Set(
-            quranData
-                .filter(a => a.sura_no >= 67 && a.sura_no <= 114)
-                .map(a => a.sura_name_ar.trim())
-        )]
+        /*  const surahs = [...new Set(
+              quranData
+                  .filter(a => a.sura_no >= 67 && a.sura_no <= 114)
+                  .map(a => a.sura_name_ar.trim())
+          )]*/
+
+        function loadSurahs(showAll = false) {
+
+            const list = document.getElementById("surahList")
+            const focus = document.getElementById("focusList")
+
+            list.innerHTML = ""
+            focus.innerHTML = ""
+
+            const surahs = [...new Set(
+                quranData
+                    .filter(a => showAll ? true : (a.sura_no >= 67 && a.sura_no <= 114))
+                    .map(a => a.sura_name_ar.trim())
+            )]
+
+            surahs.forEach(s => {
+
+                let o1 = document.createElement("option")
+                o1.value = s
+                o1.text = s
+                list.appendChild(o1)
+
+                let o2 = document.createElement("option")
+                o2.value = s
+                o2.text = s
+                focus.appendChild(o2)
+            })
+        } loadSurahs(false)
+
+
+        document.getElementById("showAll").addEventListener("change", function () {
+            loadSurahs(this.checked)
+        })
+        document.getElementById("splitIntoTwo").addEventListener("change", function () {
+            generate()
+        })
         const list = document.getElementById("surahList")
         const focus = document.getElementById("focusList")
 
@@ -130,8 +197,6 @@
 
                 let pages = map[s].max - map[s].min + 1
                 let ayahs = map[s].ayahs
-
-                // ⭐ الوزن المركب
                 weights[s] = (pages * 10) + ayahs
 
             })
@@ -184,24 +249,53 @@
 
             let weights = getSurahWeights()
 
-            let days = Array.from({ length: daysCount }, () => [])
-            let totals = Array(daysCount).fill(0)
+            let ordered = quranData
+                .map(a => a.sura_name_ar.trim())
+                .filter(name => selected.includes(name))
 
-            let sorted = selected.sort((a, b) => weights[b] - weights[a])
+            ordered = [...new Set(ordered)]
 
 
             if (isRandom) {
-                sorted = shuffleArray(sorted)
+                ordered = shuffleArray(ordered)
             }
 
-            sorted.forEach(s => {
+            let totalWeight = ordered.reduce((sum, s) => sum + weights[s], 0)
+            let target = totalWeight / daysCount
 
-                let minIndex = totals.indexOf(Math.min(...totals))
+            let days = []
+            let currentDay = []
+            let currentWeight = 0
 
-                days[minIndex].push(s)
-                totals[minIndex] += weights[s]
+            for (let i = 0; i < ordered.length; i++) {
 
-            })
+                let s = ordered[i]
+                let w = weights[s]
+
+                let withCurrent = currentWeight + w
+
+                let diffWith = Math.abs(target - withCurrent)
+                let diffWithout = Math.abs(target - currentWeight)
+
+                if (
+                    currentDay.length > 0 &&
+                    diffWithout < diffWith &&
+                    days.length < daysCount - 1
+                ) {
+                    days.push(currentDay)
+                    currentDay = []
+                    currentWeight = 0
+                }
+
+                currentDay.push(s)
+                currentWeight += w
+            }
+
+            days.push(currentDay)
+
+            while (days.length < daysCount) {
+                days.push([])
+            }
 
             return days
         }
