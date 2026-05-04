@@ -106,7 +106,10 @@
         <textarea id="result" placeholder="سيظهر الجدول هنا وينسخ تلقائيا"></textarea>
         <button onclick="generate(true)">🎲 shuffle </button>
     </div>
-
+    <label>
+        <input type="checkbox" id="showLines">
+        عدد الأسطر
+    </label>
     <script src="quranData.js"></script>
 
     <script>
@@ -145,13 +148,14 @@
             })
         } loadSurahs(false)
 
-
+        //liseneeeeeeeeeeeeeeeeeeeeeeeerrrrrrrrrrs
         document.getElementById("showAll").addEventListener("change", function () {
             loadSurahs(this.checked)
         })
         document.getElementById("splitIntoTwo").addEventListener("change", function () {
             generate()
         })
+        document.getElementById("showLines").addEventListener("change", generate)
         const list = document.getElementById("surahList")
         const focus = document.getElementById("focusList")
 
@@ -202,7 +206,19 @@
             })
 
             return weights
-        }*/
+        }*/function getSurahLines(name) {
+            let total = 0
+
+            quranData.forEach(a => {
+                if (a.sura_name_ar.trim() === name) {
+                    let start = parseInt(a.line_start)
+                    let end = parseInt(a.line_end)
+                    total += (end - start + 1)
+                }
+            })
+
+            return total
+        }
         function getSurahWeights() {
 
             let linesMap = {}
@@ -249,52 +265,28 @@
 
             let weights = getSurahWeights()
 
-            let ordered = quranData
-                .map(a => a.sura_name_ar.trim())
-                .filter(name => selected.includes(name))
-
-            ordered = [...new Set(ordered)]
-
+            let ordered = [...new Set(selected)]
 
             if (isRandom) {
                 ordered = shuffleArray(ordered)
             }
 
+            // نحسب الوزن الكلي بالأسطر
             let totalWeight = ordered.reduce((sum, s) => sum + weights[s], 0)
             let target = totalWeight / daysCount
 
-            let days = []
-            let currentDay = []
-            let currentWeight = 0
+            let days = Array.from({ length: daysCount }, () => [])
+            let dayWeights = new Array(daysCount).fill(0)
 
-            for (let i = 0; i < ordered.length; i++) {
+            for (let s of ordered) {
 
-                let s = ordered[i]
                 let w = weights[s]
 
-                let withCurrent = currentWeight + w
+                // نحط السورة في اليوم الأقل امتلاءً
+                let minIndex = dayWeights.indexOf(Math.min(...dayWeights))
 
-                let diffWith = Math.abs(target - withCurrent)
-                let diffWithout = Math.abs(target - currentWeight)
-
-                if (
-                    currentDay.length > 0 &&
-                    diffWithout < diffWith &&
-                    days.length < daysCount - 1
-                ) {
-                    days.push(currentDay)
-                    currentDay = []
-                    currentWeight = 0
-                }
-
-                currentDay.push(s)
-                currentWeight += w
-            }
-
-            days.push(currentDay)
-
-            while (days.length < daysCount) {
-                days.push([])
+                days[minIndex].push(s)
+                dayWeights[minIndex] += w
             }
 
             return days
@@ -306,6 +298,7 @@
 
             let daysCount = parseInt(document.getElementById("daysCount").value)
             let split = document.getElementById("splitIntoTwo").checked
+            let showLines = document.getElementById("showLines").checked
 
             let days = distributeBalanced(selected, daysCount, isRandom)
 
@@ -315,19 +308,54 @@
 
                 text += "🟢 اليوم " + (i + 1) + ":\n"
 
-                if (split) {
-                    let mid = Math.ceil(d.length / 2)
-                    let first = d.slice(0, mid)
-                    let second = d.slice(mid)
+                let fullDay = [...new Set([...focusSurah, ...d])]
 
-                    let tasmi3 = [...new Set([...focusSurah, ...first])]
+                if (split) {
+
+                    let tasmi3 = []
+                    let ghaybi = []
+
+                    let tasmi3Lines = 0
+                    let ghaybiLines = 0
+
+                    let totalLines = fullDay.reduce((sum, s) => sum + getSurahLines(s), 0)
+                    let half = totalLines / 2
+
+                    for (let s of fullDay) {
+
+                        let lines = getSurahLines(s)
+
+                        if (tasmi3.length === 0 || tasmi3Lines + lines <= half) {
+                            tasmi3.push(s)
+                            tasmi3Lines += lines
+                        } else {
+                            ghaybi.push(s)
+                            ghaybiLines += lines
+                        }
+                    }
 
                     text += "📖 تسميع: " + tasmi3.join(" – ") + "\n"
-                    text += "🌙 غيبي: " + second.join(" – ") + "\n"
+
+                    if (showLines) {
+                        text += "📊 أسطر التسميع: " + tasmi3Lines + "\n"
+                    }
+
+                    text += "\n🌙 غيبي: " + ghaybi.join(" – ") + "\n"
+
+                    if (showLines) {
+                        text += "📊 أسطر الغيبي: " + ghaybiLines + "\n"
+                        text += "📊 المجموع: " + totalLines + "\n"
+                    }
 
                 } else {
-                    let full = [...new Set([...focusSurah, ...d])]
-                    text += full.join(" – ") + "\n"
+
+                    let totalLines = fullDay.reduce((sum, s) => sum + getSurahLines(s), 0)
+
+                    text += fullDay.join(" – ") + "\n"
+
+                    if (showLines) {
+                        text += "📊 عدد الأسطر: " + totalLines + "\n"
+                    }
                 }
 
                 text += "\n"
@@ -335,8 +363,7 @@
 
             document.getElementById("result").value = text
             navigator.clipboard.writeText(text)
-        }
-    </script>
+        }</script>
 
 </body>
 
