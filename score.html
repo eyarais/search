@@ -1,156 +1,185 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Score Calculator</title>
+<title>score</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f4f4f4;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
+body{
+    font-family: Tahoma, Arial, sans-serif;
+    background:#f4f4f4;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    margin:0;
+}
 
-    .container {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        width: 350px;
-    }
+.container{
+    width:420px;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.2);
+}
 
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+h2{
+    text-align:center;
+    margin-bottom:20px;
+}
 
-    label {
-        display: block;
-        margin-top: 15px;
-        font-weight: bold;
-    }
+label{
+    display:block;
+    margin-top:12px;
+    font-weight:bold;
+}
 
-    input {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        font-size: 16px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-sizing: border-box;
-    }
+input{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    font-size:16px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+}
 
-    .result {
-        margin-top: 25px;
-        text-align: center;
-    }
+.formule{
+    margin:18px 0;
+    padding:12px;
+    background:#eef5ff;
+    border-radius:8px;
+    font-size:18px;
+    text-align:center;
+}
 
-    .result p {
-        font-size: 18px;
-        margin: 10px 0;
-    }
+.result{
+    margin-top:20px;
+    text-align:center;
+}
 
-    #score {
-        font-size: 36px;
-        font-weight: bold;
-        transition: color 0.3s ease;
-    }
+#g{
+    font-size:22px;
+    font-weight:bold;
+}
 
-    .score-green {
-        color: #28a745;
-    }
+#score{
+    font-size:36px;
+    font-weight:bold;
+}
 
-    .score-orange {
-        color: #ff9800;
-    }
+.score-green{color:#28a745;}
+.score-orange{color:#ff9800;}
+.score-red{color:#e53935;}
 
-    .score-red {
-        color: #e53935;
-    }
+small{
+    color:#666;
+}
 </style>
-
 </head>
+
 <body>
 
 <div class="container">
 
-    <h2>📖 Score Calculator</h2>
+<h2>معدل الحفظ</h2>
 
-    <label>Fautes</label>
-    <input type="number" id="fautes" min="0" value="0">
+<label>ضارب الخطأ</label>
+<input type="number" id="coef" step="0.1" value="1.5">
 
-    <label>Taraddud</label>
-    <input type="number" id="taraddud" min="0" value="0">
+<label>الأخطاء</label>
+<input type="number" id="fautes" value="0" min="0">
 
-    <label>Number of Pages</label>
-    <input type="number" id="pages" min="1" value="20">
+<label>الترددات</label>
+<input type="number" id="taraddud" value="0" min="0">
 
-    <div class="result">
-        <p>G = <strong id="g">0.00</strong></p>
-        <p>Score</p>
-        <div id="score" class="score-green">100.00%</div>
-    </div>
+<label>عدد الصفحات</label>
+<input type="number" id="pages" value="1" min="1">
+
+<div class="formule">
+<b>المعادلة الأولى</b><br><br>
+
+G =
+<span id="coefText">1.5</span>
+×
+<span id="fautesText">0</span>
++
+<span id="taraddudText">0</span>
+</div>
+
+<div class="formule">
+<b>المعادلة الثانية</b><br><br>
+
+النتيجة =
+100 × (1 −
+<span id="gText">0</span>
+÷
+<span id="pagesText">20</span>)
+</div>
+
+<div class="result">
+<div>قيمة G</div>
+<div id="g">0.00</div>
+
+<br>
+
+<div>النتيجة</div>
+<div id="score" class="score-green">100.00%</div>
+</div>
 
 </div>
 
 <script>
 
-const fautes = document.getElementById("fautes");
-const taraddud = document.getElementById("taraddud");
-const pages = document.getElementById("pages");
+const coef=document.getElementById("coef");
+const fautes=document.getElementById("fautes");
+const taraddud=document.getElementById("taraddud");
+const pages=document.getElementById("pages");
 
-const gSpan = document.getElementById("g");
-const scoreSpan = document.getElementById("score");
+function calc(){
 
-function calculate() {
+let c=parseFloat(coef.value)||0;
+let f=parseFloat(fautes.value)||0;
+let t=parseFloat(taraddud.value)||0;
+let p=parseFloat(pages.value)||1;
 
-    const f = parseFloat(fautes.value) || 0;
-    const t = parseFloat(taraddud.value) || 0;
-    const p = parseFloat(pages.value) || 1;
+let G=c*f+t;
+let score=100*(1-G/p);
 
-    // Formula
-    const G = 1.5 * f + t;
+score=Math.max(0,Math.min(100,score));
 
-    let score = 100 * (1 - G / p);
+document.getElementById("coefText").textContent=c;
+document.getElementById("fautesText").textContent=f;
+document.getElementById("taraddudText").textContent=t;
+document.getElementById("pagesText").textContent=p;
+document.getElementById("gText").textContent=G.toFixed(2);
 
-    // Keep between 0 and 100
-    score = Math.max(0, Math.min(100, score));
+document.getElementById("g").textContent=G.toFixed(2);
 
-    // Display values
-    gSpan.textContent = G.toFixed(2);
-    scoreSpan.textContent = score.toFixed(2) + "%";
+const scoreDiv=document.getElementById("score");
+scoreDiv.textContent=score.toFixed(2)+"%";
 
-    // Remove previous color
-    scoreSpan.classList.remove(
-        "score-green",
-        "score-orange",
-        "score-red"
-    );
+scoreDiv.className="";
 
-    // Add color according to score
-    if (score > 90) {
-        scoreSpan.classList.add("score-green");
-    }
-    else if (score > 70) {
-        scoreSpan.classList.add("score-orange");
-    }
-    else {
-        scoreSpan.classList.add("score-red");
-    }
+if(score>90){
+    scoreDiv.classList.add("score-green");
+}
+else if(score>70){
+    scoreDiv.classList.add("score-orange");
+}
+else{
+    scoreDiv.classList.add("score-red");
 }
 
-// Update automatically
-fautes.addEventListener("input", calculate);
-taraddud.addEventListener("input", calculate);
-pages.addEventListener("input", calculate);
+}
 
-// Initial calculation
-calculate();
+coef.addEventListener("input",calc);
+fautes.addEventListener("input",calc);
+taraddud.addEventListener("input",calc);
+pages.addEventListener("input",calc);
+
+calc();
 
 </script>
 
