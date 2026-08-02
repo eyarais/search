@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Score Calculator</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        width: 350px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box;
+    }
+
+    .result {
+        margin-top: 25px;
+        text-align: center;
+    }
+
+    .result p {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+
+    #score {
+        font-size: 36px;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+    .score-green {
+        color: #28a745;
+    }
+
+    .score-orange {
+        color: #ff9800;
+    }
+
+    .score-red {
+        color: #e53935;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h2>📖 Score Calculator</h2>
+
+    <label>Fautes</label>
+    <input type="number" id="fautes" min="0" value="0">
+
+    <label>Taraddud</label>
+    <input type="number" id="taraddud" min="0" value="0">
+
+    <label>Number of Pages</label>
+    <input type="number" id="pages" min="1" value="1">
+
+    <div class="result">
+        <p>G = <strong id="g">0.00</strong></p>
+        <p>Score</p>
+        <div id="score" class="score-green">100.00%</div>
+    </div>
+
+</div>
+
+<script>
+
+const fautes = document.getElementById("fautes");
+const taraddud = document.getElementById("taraddud");
+const pages = document.getElementById("pages");
+
+const gSpan = document.getElementById("g");
+const scoreSpan = document.getElementById("score");
+
+function calculate() {
+
+    const f = parseFloat(fautes.value) || 0;
+    const t = parseFloat(taraddud.value) || 0;
+    const p = parseFloat(pages.value) || 1;
+
+    // Formula
+    const G = 1.5 * f + t;
+
+    let score = 100 * (1 - G / p);
+
+    // Keep between 0 and 100
+    score = Math.max(0, Math.min(100, score));
+
+    // Display values
+    gSpan.textContent = G.toFixed(2);
+    scoreSpan.textContent = score.toFixed(2) + "%";
+
+    // Remove previous color
+    scoreSpan.classList.remove(
+        "score-green",
+        "score-orange",
+        "score-red"
+    );
+
+    // Add color according to score
+    if (score > 90) {
+        scoreSpan.classList.add("score-green");
+    }
+    else if (score > 70) {
+        scoreSpan.classList.add("score-orange");
+    }
+    else {
+        scoreSpan.classList.add("score-red");
+    }
+}
+
+// Update automatically
+fautes.addEventListener("input", calculate);
+taraddud.addEventListener("input", calculate);
+pages.addEventListener("input", calculate);
+
+// Initial calculation
+calculate();
+
+</script>
+
+</body>
+</html>
