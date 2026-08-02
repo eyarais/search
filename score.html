@@ -3,129 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>score</title>
+<title> تقييم الحفظ</title>
 
 <style>
+*{
+    box-sizing:border-box;
+    font-family:"Tahoma",sans-serif;
+}
+
 body{
-    font-family: Tahoma, Arial, sans-serif;
-    background:#f4f4f4;
+    background:#edf2f7;
+    margin:0;
+    padding:40px;
     display:flex;
     justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    margin:0;
 }
 
-.container{
-    width:420px;
+.calculator{
+    width:700px;
+    max-width:100%;
     background:white;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 5px 15px rgba(0,0,0,.2);
+    border-radius:20px;
+    padding:35px;
+    box-shadow:0 10px 35px rgba(0,0,0,.12);
 }
 
-h2{
+h1{
     text-align:center;
-    margin-bottom:20px;
+    margin-bottom:35px;
+    color:#234;
 }
 
-label{
-    display:block;
-    margin-top:12px;
+.card{
+    background:#f9fbfd;
+    border-radius:18px;
+    padding:25px;
+    margin-bottom:25px;
+    border:1px solid #dde6ef;
+}
+
+.formula{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:12px;
+    font-size:34px;
+}
+
+.var{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.var small{
+    color:#666;
+    font-size:12px;
+    margin-bottom:6px;
     font-weight:bold;
 }
 
-input{
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-    font-size:16px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    box-sizing:border-box;
+.var input{
+    width:80px;
+    text-align:center;
+    font-size:26px;
+    padding:6px;
+    border:none;
+    border-bottom:3px solid #1976d2;
+    background:transparent;
+    outline:none;
 }
 
-.formule{
-    margin:18px 0;
-    padding:12px;
-    background:#eef5ff;
-    border-radius:8px;
-    font-size:18px;
-    text-align:center;
+.fraction{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    margin:0 8px;
+}
+
+.numerator{
+    padding-bottom:6px;
+}
+
+.line{
+    width:110px;
+    border-top:3px solid black;
+}
+
+.denominator{
+    padding-top:6px;
 }
 
 .result{
-    margin-top:20px;
+    margin-top:30px;
     text-align:center;
 }
 
-#g{
-    font-size:22px;
-    font-weight:bold;
+.result h2{
+    margin-bottom:15px;
 }
 
 #score{
-    font-size:36px;
+    display:inline-block;
+    font-size:48px;
     font-weight:bold;
+    padding:18px 35px;
+    border-radius:18px;
+    transition:.3s;
+    color:white;
 }
 
-.score-green{color:#28a745;}
-.score-orange{color:#ff9800;}
-.score-red{color:#e53935;}
+.green{
+    background:#28a745;
+}
 
-small{
-    color:#666;
+.orange{
+    background:#ff9800;
+}
+
+.red{
+    background:#e53935;
+}
+
+#gammaValue{
+    font-size:28px;
+    text-align:center;
+    margin-top:20px;
+    font-weight:bold;
+    color:#1565c0;
 }
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="calculator">
 
-<h2>معدل الحفظ</h2>
+<h1> تقييم الحفظ</h1>
 
-<label>ضارب الخطأ</label>
-<input type="number" id="coef" step="0.1" value="1.5">
+<div class="card">
 
-<label>الأخطاء</label>
-<input type="number" id="fautes" value="0" min="0">
+<div class="formula">
 
-<label>الترددات</label>
-<input type="number" id="taraddud" value="0" min="0">
+γ =
 
-<label>عدد الصفحات</label>
-<input type="number" id="pages" value="1" min="1">
-
-<div class="formule">
-<b>المعادلة الأولى</b><br><br>
-
-G =
-<span id="coefText">1.5</span>
-×
-<span id="fautesText">0</span>
-+
-<span id="taraddudText">0</span>
+<div class="var">
+<small>ضارب الخطأ</small>
+<input id="coef" type="number" step="0.1" value="1.5">
 </div>
 
-<div class="formule">
-<b>المعادلة الثانية</b><br><br>
+×
+
+<div class="var">
+<small>الأخطاء</small>
+<input id="fautes" type="number" value="0">
+</div>
+
++
+
+<div class="var">
+<small>الترددات</small>
+<input id="taraddud" type="number" value="0">
+</div>
+
+</div>
+
+<div id="gammaValue">
+γ = 0.00
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="formula">
 
 النتيجة =
-100 × (1 −
-<span id="gText">0</span>
-÷
-<span id="pagesText">20</span>)
+
+100 ×
+
+(
+
+1 −
+
+<div class="fraction">
+
+<div class="numerator">
+<div class="var">
+<small>γ</small>
+<input id="gammaBox" readonly>
+</div>
+</div>
+
+<div class="line"></div>
+
+<div class="denominator">
+<div class="var">
+<small>عدد الصفحات</small>
+<input id="pages" type="number" value="1" min="1">
+</div>
+</div>
+
+</div>
+
+)
+
+</div>
+
 </div>
 
 <div class="result">
-<div>قيمة G</div>
-<div id="g">0.00</div>
 
-<br>
+<h2>النتيجة النهائية</h2>
 
-<div>النتيجة</div>
-<div id="score" class="score-green">100.00%</div>
+<div id="score" class="green">
+100.00 %
+</div>
+
 </div>
 
 </div>
@@ -137,49 +233,44 @@ const fautes=document.getElementById("fautes");
 const taraddud=document.getElementById("taraddud");
 const pages=document.getElementById("pages");
 
-function calc(){
+function calculate(){
 
 let c=parseFloat(coef.value)||0;
 let f=parseFloat(fautes.value)||0;
 let t=parseFloat(taraddud.value)||0;
 let p=parseFloat(pages.value)||1;
 
-let G=c*f+t;
-let score=100*(1-G/p);
+let gamma=c*f+t;
+
+let score=100*(1-gamma/p);
 
 score=Math.max(0,Math.min(100,score));
 
-document.getElementById("coefText").textContent=c;
-document.getElementById("fautesText").textContent=f;
-document.getElementById("taraddudText").textContent=t;
-document.getElementById("pagesText").textContent=p;
-document.getElementById("gText").textContent=G.toFixed(2);
+document.getElementById("gammaBox").value=gamma.toFixed(2);
 
-document.getElementById("g").textContent=G.toFixed(2);
+document.getElementById("gammaValue").innerHTML=
+"γ = <b>"+gamma.toFixed(2)+"</b>";
 
-const scoreDiv=document.getElementById("score");
-scoreDiv.textContent=score.toFixed(2)+"%";
+const result=document.getElementById("score");
 
-scoreDiv.className="";
+result.innerHTML=score.toFixed(2)+" %";
 
-if(score>90){
-    scoreDiv.classList.add("score-green");
-}
-else if(score>70){
-    scoreDiv.classList.add("score-orange");
-}
-else{
-    scoreDiv.classList.add("score-red");
-}
+result.className="";
+
+if(score>90)
+result.classList.add("green");
+else if(score>70)
+result.classList.add("orange");
+else
+result.classList.add("red");
 
 }
 
-coef.addEventListener("input",calc);
-fautes.addEventListener("input",calc);
-taraddud.addEventListener("input",calc);
-pages.addEventListener("input",calc);
+document.querySelectorAll("input").forEach(i=>{
+i.addEventListener("input",calculate);
+});
 
-calc();
+calculate();
 
 </script>
 
